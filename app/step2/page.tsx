@@ -1,15 +1,10 @@
+import {Step1} from './step1/page';
 import { Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Image, Input, useDisclosure } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { Item, stockService } from "../services/stockservice";
 
-interface Step2PageProps {
-  onNext: (page: string) => void;
-  selectedItem: Item | null;
-  setSelectedItem: (item: Item | null) => void;
-  amounts: { nickel: number; dime: number; quarter: number }; // Inserted coin breakdown
-}
 
-export default function Step2Page({ onNext, selectedItem, setSelectedItem, amounts }: Step2PageProps) {
+export default function Step2Page({ onNext, selectedItem, setSelectedItem, amounts, wallet, setWallet }: Step2PageProps) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [localSelectedItem, setLocalSelectedItem] = useState<Item | null>(selectedItem);
   const [quantity, setQuantity] = useState(1);
@@ -28,6 +23,7 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
 
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [totalDrawerOpen, setTotalDrawerOpen] = useState(false);
 
   const handleOpen = (item: Item) => {
     setLocalSelectedItem(item);
@@ -48,29 +44,66 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
     setTimeout(() => setIsCheckingOut(false), 500);
   };
 
+  const handleCancel = () => {
+    console.log("Wallet before modifying payment:", wallet);
+    console.log("Amounts before modifying payment:", amounts);
+
+    // Add the total amount paid back to the wallet
+    const updatedWallet = {
+      nickel: wallet.nickel + amounts.nickel,
+      dime: wallet.dime + amounts.dime,
+      quarter: wallet.quarter + amounts.quarter,
+    };
+
+    console.log("Updated Wallet after adding total amount back:", updatedWallet);
+    setWallet(updatedWallet);
+
+    // Call onNext with the updated wallet and reset selected amounts
+    onNext("coins", {
+      nickel: 0,
+      dime: 0,
+      quarter: 0,
+    }, updatedWallet);
+
+    console.log("Wallet after calling onNext:", updatedWallet);
+  };
+
   return (
-    <div className="flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-4">Total Inserted: {totalAmount}¢</h2>
-
-      {/* Display inserted coin breakdown */}
-      <div className="mb-4 p-4 border rounded-lg bg-gray-100">
-        <h3 className="text-lg font-semibold mb-2">Inserted Coins:</h3>
-        <p>Nickels: {amounts.nickel} ({amounts.nickel * 5}¢)</p>
-        <p>Dimes: {amounts.dime} ({amounts.dime * 10}¢)</p>
-        <p>Quarters: {amounts.quarter} ({amounts.quarter * 25}¢)</p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="flex flex-col items-center space-y-6 p-6 min-h-screen">
+      {/* Button to open the Total Inserted Drawer */}
+      <Button 
+        onPress={() => setTotalDrawerOpen(true)} 
+        variant="solid" 
+        color="primary" 
+        className="w-full mb-4"
+      >
+        Total Inserted: {totalAmount}¢ (View Details)
+      </Button>
+  
+      {/* Drink Selection Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         {stock.map((item, index) => (
-          <Card key={index} shadow="sm" className="p-4">
-            <CardBody>
-              <Image alt={item.drink} className="rounded-xl mb-2" src={item.img} width={150} height={150} />
-              <p>{item.drink}</p>
+          <Card key={index} shadow="sm" className="p-4 rounded-lg hover:shadow-lg transition-all">
+            <CardBody className="flex flex-col items-center text-center">
+              {/* Drink Image */}
+              <Image 
+                alt={item.drink} 
+                src={item.img} 
+                width={180} 
+                height={180} 
+                className="rounded-xl mb-4"
+              />
+              <h4 className="text-lg font-medium">{item.drink}</h4>
               <p>{item.price}¢</p>
-              <p>Available: {item.amount}</p>
-              <Button 
-                onPress={() => handleOpen(item)} 
-                isDisabled={quantity * item.price > totalAmount}
+              <p className="mb-4">Available: {item.amount}</p>
+  
+              {/* Add to Cart Button */}
+              <Button
+                onPress={() => handleOpen(item)}
+                isDisabled={item.amount === 0 || quantity * item.price > totalAmount}
+                variant={item.amount === 0 ? "light" : item.price > totalAmount ? "outline" : "solid"}
+                color={item.amount === 0 ? "gray" : item.price > totalAmount ? "orange" : "primary"}
+                className="w-full text-sm"
               >
                 {item.amount === 0 ? "Out of Stock" : item.price > totalAmount ? "Insufficient Funds" : "Add"}
               </Button>
@@ -79,28 +112,55 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
         ))}
       </div>
 
+      <Button
+            onClick={handleCancel}
+            color="danger"
+            variant="light"
+            className="w-full sm:w-auto"
+          >
+            Cancel
+          </Button>
+  
+      {/* Drink Details Drawer */}
       {localSelectedItem && (
-        <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
-          <DrawerContent>
-            <DrawerHeader>{localSelectedItem.drink}</DrawerHeader>
-            <DrawerBody>
-              <Image alt={localSelectedItem.drink} src={localSelectedItem.img} width={100} height={100} className="mb-4" />
-              <p>Price: {localSelectedItem.price}¢</p>
-              <p>Available: {localSelectedItem.amount}</p>
-              <Input
-                type="number"
-                min={1}
-                max={localSelectedItem.amount}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+        <Drawer isOpen={isOpen} onOpenChange={onOpenChange} size="md">
+          <DrawerContent className="flex flex-col items-center">
+            <DrawerHeader className="font-semibold text-lg text-center w-full mb-6">
+              {localSelectedItem.drink}
+            </DrawerHeader>
+  
+            <DrawerBody className="flex flex-col items-center w-full p-6">
+              {/* Drink Image */}
+              <Image
+                alt={localSelectedItem.drink}
+                src={localSelectedItem.img}
+                width={250}
+                height={250}
+                className="rounded-lg mb-6"
               />
+  
+              {/* Drink Details */}
+              <div className="w-full text-center">
+                <p className="text-lg mb-2">Price: {localSelectedItem.price}¢</p>
+                <p className="text-lg mb-4">Available: {localSelectedItem.amount}</p>
+              </div>
             </DrawerBody>
-            <DrawerFooter>
-              <Button color="danger" variant="light" onPress={onClose}>Cancel</Button>
-              <Button 
-                color="primary" 
-                onPress={handleCheckout} 
+  
+            <DrawerFooter className="flex justify-around w-full p-4">
+              <Button
+                color="danger"
+                variant="light"
+                onPress={onClose}
+                className="w-1/3 text-lg py-3"
+              >
+                Cancel
+              </Button>
+  
+              <Button
+                color="primary"
+                onPress={handleCheckout}
                 isDisabled={quantity * localSelectedItem.price > totalAmount}
+                className="w-1/3 text-lg py-3"
               >
                 Checkout
               </Button>
@@ -108,6 +168,35 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
           </DrawerContent>
         </Drawer>
       )}
+  
+      {/* Total Inserted Amount Drawer */}
+      <Drawer isOpen={totalDrawerOpen} onOpenChange={() => setTotalDrawerOpen(false)} size="md">
+        <DrawerContent className="flex flex-col items-center">
+          
+  
+          <DrawerBody className="flex flex-col items-center w-full p-6">
+            <h3 className="text-xl font-semibold mb-4">Total Inserted: {totalAmount}¢</h3>
+            {/* Display inserted coin breakdown */}
+            <div className="mb-6 p-4 rounded-lg border border-gray-200 w-full">
+              <p>Nickels: {amounts.nickel} ({amounts.nickel * 5}¢)</p>
+              <p>Dimes: {amounts.dime} ({amounts.dime * 10}¢)</p>
+              <p>Quarters: {amounts.quarter} ({amounts.quarter * 25}¢)</p>
+            </div>
+          </DrawerBody>
+  
+          <DrawerFooter className="flex justify-around w-full p-4">
+            <Button 
+              color="danger" 
+              variant="light" 
+              onPress={() => setTotalDrawerOpen(false)} 
+              className="w-1/3 text-lg py-3"
+            >
+              Close
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
+  
 }

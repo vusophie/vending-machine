@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Sophie's Vending Machine",
+  description: "Crisp Take Home",
   navItems: [
     {
       label: "Start",
@@ -28,6 +28,6 @@ export const siteConfig = {
     }
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
+    github: "https://github.com/vusophie/vending-machine",
   },
 };

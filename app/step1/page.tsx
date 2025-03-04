@@ -1,6 +1,5 @@
-import { Button, Card, CardBody, Image, NumberInput } from "@heroui/react";
-import { useState, useEffect } from "react";
-import { WalletService } from "../services/walletservice"; // Import walletService
+import { Button, Card, CardBody, CardFooter, Image, NumberInput } from "@heroui/react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Step1Page({ onNext, wallet }) {
   const data = [
@@ -9,8 +8,8 @@ export default function Step1Page({ onNext, wallet }) {
     { name: "quarter", value: 25, price: "25¢", img: "/3coins.png" },
   ];
 
-  // Track amounts temporarily so we don't modify the actual wallet
   const [tempAmounts, setTempAmounts] = useState({ nickel: 0, dime: 0, quarter: 0 });
+  const handleNextRef = useRef(null); // Use ref for latest function reference
 
   const totalAmount = Object.entries(tempAmounts).reduce((acc, [key, value]) => {
     const coin = data.find((c) => c.name === key);
@@ -19,13 +18,17 @@ export default function Step1Page({ onNext, wallet }) {
 
   const handleAmountChange = (coin, value) => {
     setTempAmounts((prev) => {
-      // Ensure we don’t add more coins than available in the wallet
       const maxValue = Math.min(value, wallet[coin]);
-      const updatedTempAmounts = { ...prev, [coin]: maxValue };
-      console.log("Updated Temp Amounts:", updatedTempAmounts); // Log updated temp amounts
-      return updatedTempAmounts;
+      return { ...prev, [coin]: maxValue };
     });
   };
+
+  const handleNext = () => {
+    setTempAmounts({ nickel: 0, dime: 0, quarter: 0 });
+    onNext("select", tempAmounts);
+  };
+
+  handleNextRef.current = handleNext; // Ensure latest function is used in event listener
 
   const handleKeyPress = (event) => {
     setTempAmounts((prev) => {
@@ -39,74 +42,96 @@ export default function Step1Page({ onNext, wallet }) {
         updatedAmounts.quarter += 1;
       } else if (event.key === "c") {
         updatedAmounts = { nickel: 0, dime: 0, quarter: 0 };
+      } else if (event.key === "Enter" && totalAmount >= 25) {
+        handleNextRef.current(); // Trigger next step on Enter
       }
 
-      console.log("Updated Temp Amounts after KeyPress:", updatedAmounts); // Log after key press
       return updatedAmounts;
     });
   };
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [wallet]);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [wallet, totalAmount]);
 
   const isNextEnabled = totalAmount >= 25;
 
-  const handleNext = () => {
-    // Update the wallet after the user proceeds to the next step
-    setTempAmounts({ nickel: 0, dime: 0, quarter: 0 }); // Reset the temporary amounts
-    onNext("select", tempAmounts);
-  };
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-      {/* Wallet display section */}
-      <div className="col-span-1 sm:col-span-2 lg:col-span-4 p-4 bg-gray-100 rounded-lg">
-        <h3 className="text-xl font-bold">Wallet Status</h3>
-        <div className="flex justify-between mt-2">
-          <div>
-            <p className="text-sm">Nickels Available: {wallet.nickel}</p>
-            <p className="text-sm">Nickels Used: {tempAmounts.nickel}</p>
+    <div className="flex flex-row items-start gap-6">
+      {/* Wallet Section */}
+      <Card shadow="md" className="p-5 w-1/3 rounded-xl">
+        <CardBody>
+          <h3 className="text-xl font-semibold">Wallet Status</h3>
+          <div className="mt-3 space-y-3">
+            {data.map((coin) => (
+              <div key={coin.name} className="flex justify-between text-sm font-medium">
+                <span className="capitalize">{coin.name}: </span>
+                <span>{tempAmounts[coin.name]} / {wallet[coin.name]}</span>
+              </div>
+            ))}
           </div>
-          <div>
-            <p className="text-sm">Dimes Available: {wallet.dime}</p>
-            <p className="text-sm">Dimes Used: {tempAmounts.dime}</p>
-          </div>
-          <div>
-            <p className="text-sm">Quarters Available: {wallet.quarter}</p>
-            <p className="text-sm">Quarters Used: {tempAmounts.quarter}</p>
-          </div>
-        </div>
-      </div>
-
-      {data.map((item) => (
-        <Card key={item.name} shadow="sm" className="p-4">
+        </CardBody>
+      </Card>
+  
+      {/* Right Content */}
+      <div className="w-2/3 space-y-4">
+        {/* Instruction Card */}
+        <Card shadow="lg" className="p-6 rounded-xl">
           <CardBody>
-            <Image alt={item.name} className="rounded-xl mb-2" src={item.img} width={100} height={100} />
-            <NumberInput
-              hideStepper
-              className="max-w-xs"
-              value={tempAmounts[item.name] || ""}
-              onChange={(e) => handleAmountChange(item.name, parseInt(e.target.value) || 0)}
-              endContent={<span className="text-default-400 text-small">{item.price}</span>}
-              label="Insert Coins"
-              placeholder="Insert Coins"
-            />
+            <h3 className="text-2xl font-boldmb-4"><strong>💰 How to Use Your Wallet</strong></h3>
+            <p className="text-sm  mb-4">
+              <strong>Your Wallet Status:</strong> On the left side, you'll see your wallet’s status, showing your total coins and how many are left.
+            </p>
+            <div className="p-4 rounded-lg shadow-md border border-blue-300">
+              <p className="text-sm mb-2">
+                <span className="font-semibold">Insert Coins:</span><br />
+                - Press <strong className="text-blue-600">n</strong> to insert 5 cents (nickels).<br />
+                - Press <strong className="text-blue-600">d</strong> to insert 10 cents (dimes).<br />
+                - Press <strong className="text-blue-600">q</strong> to insert 25 cents (quarters).
+              </p>
+              <p className="text-sm ">
+                <span className="font-semibold">Other Actions:</span><br />
+                - Press <strong className="text-red-600">c</strong> to clear all inserted coins.<br />
+                - Once you've inserted at least 25 cents, press <strong className="text-green-600">Enter</strong> to proceed. <br/>
+                - Press <strong className="text-blue-600">CTRL + R</strong> any time to refresh the page and restart the app.
+              </p>
+            </div>
           </CardBody>
         </Card>
-      ))}
 
-      <Button onPress={() => setTempAmounts({ nickel: 0, dime: 0, quarter: 0 })} className="col-span-1 sm:col-span-2 lg:col-span-4" variant="outline">
-        Clear Coins
-      </Button>
-
-      <Button onPress={handleNext} isDisabled={!isNextEnabled}>
-        Next: Select a Product
-      </Button>
+  
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {data.map((item) => (
+            <Card key={item.name} shadow="sm" className="p-4 flex flex-col items-center rounded-lg">
+              <CardBody className="flex flex-col items-center">
+                <Image alt={item.name} className="mb-3 w-16 h-16 object-contain" src={item.img} />
+                <NumberInput
+                  hideStepper
+                  className="w-full text-sm"
+                  value={tempAmounts[item.name] || ""}
+                  onChange={(e) => handleAmountChange(item.name, parseInt(e.target.value) || 0)}
+                  endContent={<span className="text-sm">{item.price}</span>}
+                  label="Insert Coins"
+                  placeholder="Enter Amount"
+                />
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+  
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
+          <Button 
+            onPress={() => setTempAmounts({ nickel: 0, dime: 0, quarter: 0 })} 
+            variant="light" color="danger" size="md" className="w-full sm:w-auto">
+            Clear Coins
+          </Button>
+          <Button color="primary" variant="solid" onPress={handleNext} isDisabled={!isNextEnabled} size="md" className="w-full sm:w-auto">
+            Next: Select a Product
+          </Button>
+        </div>
+      </div>
     </div>
   );
-};
+  
+}

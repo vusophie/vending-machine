@@ -6,6 +6,8 @@ import Step1Page from "./step1/page";
 import Step2Page from "./step2/page";
 import Step3Page from "./step3/page";
 import Step4Page from "./step4/page";
+import { Button, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
+import { HelpCircle } from "lucide-react";
 
 function Home() {
   const [currentPage, setCurrentPage] = useState<keyof typeof components>("coins"); 
@@ -13,6 +15,11 @@ function Home() {
   const [amounts, setAmounts] = useState({ nickel: 0, dime: 0, quarter: 0 });
   const [totalAmount, setTotalAmount] = useState(0);
   const [wallet, setWallet] = useState({ nickel: 5, dime: 5, quarter: 5 });
+  const [showHelp, setShowHelp] = useState(false);
+
+  const toggleHelpMessage = () => {
+    setShowHelp((prevShowHelp) => !prevShowHelp);
+  };
 
   const resetData = () => {
     setSelectedItem(null);
@@ -61,6 +68,7 @@ function Home() {
         setSelectedItem={setSelectedItem} 
         amounts={amounts} 
         wallet={wallet} // Pass wallet here
+        setWallet={setWallet} // Pass setWallet here
       />
     ),
     confirm: () => (
@@ -88,8 +96,28 @@ function Home() {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+      <div className="flex items-center gap-4">
+        <h1 className="text-3xl font-semibold text-center">Sophie's Vending Machine</h1>
+        
+        {/* Help Button with Popover */}
+        <Popover key={"primary"} color={"primary"} placement="top">
+          <PopoverTrigger>
+            <Button className="rounded-full shadow-md" color="primary" variant="solid">
+              <HelpCircle className="w-6 h-6" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="px-1 py-2">
+              <h1 className="font-bold">Help</h1>
+              <div className="">
+                To use the vending machine, insert coins, select a product, confirm your purchase, and enjoy!
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
       <div className="inline-block max-w-xl text-center justify-center">
-        <Breadcrumbs underline="active">
+        <Breadcrumbs size="lg">
           <BreadcrumbItem key="coins" isCurrent={currentPage === "coins"}>Deposit Coins</BreadcrumbItem>
           <BreadcrumbItem key="select" isCurrent={currentPage === "select"}>Select a Product</BreadcrumbItem>
           <BreadcrumbItem key="confirm" isCurrent={currentPage === "confirm"}>Confirm Purchase</BreadcrumbItem>

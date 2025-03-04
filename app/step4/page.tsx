@@ -2,13 +2,12 @@ import { Button, Card, CardBody, Image } from "@heroui/react";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { stockService } from "../services/stockservice";
-import { walletService } from "../services/walletservice"; // Import walletService
 
 export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWallet }) {
   const updateStockRef = useRef(null);
   const [change, setChange] = useState(0);
   const [selectedCoin, setSelectedCoin] = useState(null);
-  const [coinOptions, setCoinOptions] = useState({ nickel: true, dime: true, quarter: true });
+  const [coinOptions, setCoinOptions] = useState({ nickel: true, dime: true, quarter: true, none: true});
 
   useEffect(() => {
     if (selectedItem && updateStockRef.current !== selectedItem.drink) {
@@ -28,9 +27,10 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
   useEffect(() => {
     setChange(changeDue);
     setCoinOptions({
-      nickel: true,
+      nickel: changeDue >= 5,
       dime: changeDue >= 10,
       quarter: changeDue >= 25,
+      none: changeDue === 0
     });
   }, [changeDue]);
 
@@ -46,6 +46,9 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
     let remaining = changeDue;
     let coinsReturned = { nickel: 0, dime: 0, quarter: 0 };
 
+    if (coinType === "none") {
+      coinsReturned = { nickel: 0, dime: 0, quarter: 0 }; 
+    }
     if (coinType === "quarter" && remaining >= 25) {
       coinsReturned.quarter = Math.floor(remaining / 25);
       remaining %= 25;
@@ -87,30 +90,40 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
 
   return (
     <div className="flex flex-col items-center justify-center text-center space-y-6 p-6">
-      <CheckCircle className="w-24 h-24 text-green-500" />
-      <h2 className="text-3xl font-bold text-gray-800">Order Successful!</h2>
-      <p className="text-lg text-gray-600">Your {selectedItem.drink} is being prepared.</p>
+      <CheckCircle className="w-24 h-24 text-green-500 animate-pulse" />
+      <h2 className="text-3xl font-bold ">Order Successful!</h2>
+      <p className="text-lg ">Your {selectedItem.drink} is being prepared.</p>
 
-      <Card shadow="sm" className="p-4 w-full max-w-md">
-        <CardBody>
-          <Image alt={selectedItem.drink} className="rounded-xl mb-4 mx-auto" src={selectedItem.img} width={150} height={150} />
-          <p className="text-lg font-semibold">{selectedItem.drink}</p>
-          <p className="text-gray-600">Price: {itemPrice}¢</p>
-          <p className="text-gray-600">Total Paid: {totalAmount}¢</p>
-          <p className="text-gray-600 font-semibold">Change Due: {changeDue}¢</p>
+      <Card shadow="sm" className="p-6 w-full max-w-md rounded-xl bg-gradient-to-r from-teal-400 to-blue-500">
+        <CardBody className="text-center flex flex-col items-center">
+          <Image
+            alt={selectedItem.drink}
+            className="rounded-xl mb-6"
+            src={selectedItem.img}
+            width={180}
+            height={180}
+          />
+          <p className="text-2xl font-semibold">{selectedItem.drink}</p>
+          <p className="text-lg">Price: {itemPrice}¢</p>
+          <p className="text-lg">Total Paid: {totalAmount}¢</p>
+          <p className="text-lg font-semibold">Change Due: {changeDue}¢</p>
         </CardBody>
       </Card>
 
-      <p className="text-lg text-gray-600">Select coin type for your change:</p>
+      <p className="text-lg ">Select coin type for your change:</p>
       <div className="flex gap-4">
-        <Button onClick={() => handleCoinSelection("quarter")} disabled={!coinOptions.quarter} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-          Quarters
+        <Button onClick={() => handleCoinSelection("quarter")} isDisabled={!coinOptions.quarter} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+        25¢
         </Button>
-        <Button onClick={() => handleCoinSelection("dime")} disabled={!coinOptions.dime} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-          Dimes
+        <Button onClick={() => handleCoinSelection("dime")} isDisabled={!coinOptions.dime} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+        10¢
         </Button>
-        <Button onClick={() => handleCoinSelection("nickel")} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-          Nickels
+        <Button onClick={() => handleCoinSelection("nickel")} isDisabled={!coinOptions.nickel} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+        5¢
+        </Button>
+
+        <Button onClick={() => handleCoinSelection("none")} isDisabled={!coinOptions.none} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
+        0¢
         </Button>
       </div>
 
@@ -118,10 +131,10 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
         <div className="mt-4">
           <p className="text-lg font-semibold">Your change:</p>
           {Object.entries(selectedCoin).map(([coin, count]) =>
-            count > 0 ? <p key={coin}>{count} × {coin}</p> : null
+            count > 0 ? <p key={coin}>{count} × {coin === "nickel" ? "5¢" : coin === "dime" ? "10¢" : "25¢"}</p> : null
           )}
           <Button onClick={handleReturnToCoins} className="bg-purple-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-purple-700 transition mt-4">
-            Return to Coins
+            Back
           </Button>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, Image } from "@heroui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Step3Page({
   onNext,
@@ -12,6 +12,24 @@ export default function Step3Page({
   if (!selectedItem) {
     return <div>No item selected.</div>;
   }
+
+  const [timer, setTimer] = useState(30);
+  const [isTimerExpired, setIsTimerExpired] = useState(false);
+
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer === 1) {
+          clearInterval(countdown);
+          setIsTimerExpired(true); // Time is up, redirect to modify payment
+          handleModifyPayment();   // Automatically trigger modify payment
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  
+    return () => clearInterval(countdown); // Cleanup on component unmount
+  }, []);
 
   useEffect(() => {
     console.log("Updated Wallet in Step3Page:", wallet);
@@ -59,35 +77,63 @@ export default function Step3Page({
     console.log("Amounts Used:", amounts);
 
     onNext("enjoy", amounts, wallet);
+    
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card shadow="sm" className="p-4">
-        <CardBody>
-          <Image alt={selectedItem.drink} className="rounded-xl mb-2" src={selectedItem.img} width={150} height={150} />
-          <p><strong>{selectedItem.drink}</strong></p>
-          <p>Price: {selectedItem.price}¢</p>
-          <p>Total Paid: {totalAmount}¢</p>
-          {Object.entries(amounts).filter(([_, count]) => count > 0).map(([coin, count]) => (
-            <p key={coin}>{count} × {coin}</p>
-          ))}
-          <p><strong>Change Due: </strong>{isChangeDue ? changeDue : 0}¢</p>
-          {!isChangeDue && <p className="text-red-500">Not enough funds for this item.</p>}
+    <div className="flex flex-col items-center gap-6 p-6">
+      {/* Drink Selection Card */}
+      <Card shadow="lg" className="rounded-xl ">
+        <CardBody className="flex flex-col items-center text-center">
+          {/* Drink Image */}
+          <Image alt={selectedItem.drink} className="rounded-xl mb-6" src={selectedItem.img} width={180} height={180} />
+  
+          {/* Drink Name and Price */}
+          <p className="text-2xl font-semibold mb-2">{selectedItem.drink}</p>
+          <p className="text-lg mb-4">Price: {selectedItem.price}¢</p>
+  
+          
+          {/* Change Due */}
+          <p className="font-semibold text-lg mt-2">
+            Change Due: {isChangeDue ? changeDue : 0}¢
+          </p>
+  
+          {/* Insufficient funds message */}
+          {!isChangeDue && (
+            <p className="text-red-500 text-sm mt-2">Oops! You don't have enough funds for this item.</p>
+          )}
+  
+          {/* Timer Display */}
+          <p className="mt-4 text-sm">
+            Time remaining: <strong>{timer}s</strong>
+          </p>
         </CardBody>
       </Card>
-
-      <Card shadow="sm" className="p-4 mt-4">
-        <CardBody>
-          <Button onClick={handleConfirm}>Confirm Payment</Button>
-        </CardBody>
-      </Card>
-
-      <Card shadow="sm" className="p-4 mt-4">
-        <CardBody>
-          <Button onClick={handleModifyPayment}>Modify Payment Method</Button>
-        </CardBody>
-      </Card>
+  
+      {/* Action Buttons */}
+      <div className="w-full max-w-md">
+        <div className="flex space-x-4 mt-4">
+          {/* Confirm Payment Button */}
+          <Button
+            onClick={handleConfirm}
+            color="primary" variant="solid" 
+            className="w-full sm:w-auto"
+          >
+            Confirm Payment
+          </Button>
+  
+          {/* Modify Payment Button */}
+          <Button
+            onClick={handleModifyPayment}
+            color="danger"
+            variant="light"
+            className="w-full sm:w-auto"
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
     </div>
   );
+  
 }

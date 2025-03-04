@@ -11,7 +11,7 @@ class StockService {
     { amount: 1, drink: "Cola", price: 25, img: "/cola.png" },
     { amount: 8, drink: "Diet Cola", price: 35, img: "/diet.png" },
     { amount: 0, drink: "Lime Soda", price: 25, img: "/sprite.png" },
-    { amount: 2, drink: "Water", price: 45, img: "/cola.png" },
+    { amount: 2, drink: "Water", price: 45, img: "/water.png" },
   ];
 
   getStock() {

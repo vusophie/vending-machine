@@ -15,7 +15,7 @@ import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import {Breadcrumbs, BreadcrumbItem} from "@heroui/react";
+import {Breadcrumbs, BreadcrumbItem, Popover, PopoverContent, PopoverTrigger} from "@heroui/react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -36,12 +36,13 @@ export const Navbar = () => {
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
+          <div className="flex justify-start items-center gap-1">
             <Logo />
-            <p className="font-bold text-inherit">Vending Machine</p>
-          </NextLink>
+            <p className="font-bold text-inherit">Sophie's Vending Machine</p>
+          </div>
         </NavbarBrand>
       </NavbarContent>
+
 
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
@@ -54,15 +55,24 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            Sophie
-          </Button>
+          <Popover color="secondary" placement="bottom">
+            <PopoverTrigger>
+              <Button
+                isExternal
+                as={Link}
+                className="text-sm font-normal text-default-600 bg-default-100"
+                startContent={<HeartFilledIcon className="text-danger" />}
+                variant="flat"
+              >
+                Send a Like!
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2">
+                <div className="text-small font-bold">Like!</div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </NavbarItem>
       </NavbarContent>
 
