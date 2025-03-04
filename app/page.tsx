@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
-import { useState } from 'react';
+import { useState } from "react";
+import { Button, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
+import { HelpCircle } from "lucide-react";
+
 import Step1Page from "./step1/page";
 import Step2Page from "./step2/page";
 import Step3Page from "./step3/page";
 import Step4Page from "./step4/page";
-import { Button, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
-import { HelpCircle } from "lucide-react";
 
 function Home() {
-  const [currentPage, setCurrentPage] = useState<keyof typeof components>("coins"); 
+  const [currentPage, setCurrentPage] =
+    useState<keyof typeof components>("coins");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [amounts, setAmounts] = useState({ nickel: 0, dime: 0, quarter: 0 });
   const [totalAmount, setTotalAmount] = useState(0);
@@ -42,10 +44,16 @@ function Home() {
    * @param {object} [updatedWallet] - The updated wallet.
    * @returns {void}
    */
-  const handleNext = (page: keyof typeof components, newAmounts?: any, updatedWallet?: any) => {
+  const handleNext = (
+    page: keyof typeof components,
+    newAmounts?: any,
+    updatedWallet?: any,
+  ) => {
     if (newAmounts) {
       setAmounts(newAmounts);
-      const total = newAmounts.nickel * 5 + newAmounts.dime * 10 + newAmounts.quarter * 25;
+      const total =
+        newAmounts.nickel * 5 + newAmounts.dime * 10 + newAmounts.quarter * 25;
+
       setTotalAmount(total);
 
       // Decrease wallet balance
@@ -68,41 +76,41 @@ function Home() {
   const components = {
     coins: () => (
       <Step1Page
-        onNext={handleNext}
-        setSelectedItem={setSelectedItem}
         amounts={amounts}
         setAmounts={setAmounts}
-        wallet={wallet} // Pass wallet here
+        setSelectedItem={setSelectedItem}
         setWallet={setWallet} // Pass setWallet here
+        wallet={wallet} // Pass wallet here
+        onNext={handleNext}
       />
     ),
     select: () => (
-      <Step2Page 
-        onNext={handleNext} 
-        selectedItem={selectedItem} 
-        setSelectedItem={setSelectedItem} 
-        amounts={amounts} 
-        wallet={wallet} // Pass wallet here
+      <Step2Page
+        amounts={amounts}
+        selectedItem={selectedItem}
+        setSelectedItem={setSelectedItem}
         setWallet={setWallet} // Pass setWallet here
+        wallet={wallet} // Pass wallet here
+        onNext={handleNext}
       />
     ),
     confirm: () => (
-      <Step3Page 
-        onNext={handleNext} 
-        selectedItem={selectedItem} 
-        amounts={amounts} 
+      <Step3Page
+        amounts={amounts}
+        selectedItem={selectedItem}
         setAmounts={setAmounts}
-        wallet={wallet} // Pass wallet here  
         setWallet={setWallet} // Pass setWallet here
+        wallet={wallet} // Pass wallet here
+        onNext={handleNext}
       />
     ),
     enjoy: () => (
-      <Step4Page 
-        onNext={handleNext} 
-        selectedItem={selectedItem} 
-        amounts={amounts} 
-        wallet={wallet} // Pass wallet here  
+      <Step4Page
+        amounts={amounts}
+        selectedItem={selectedItem}
         setWallet={setWallet} // Pass setWallet here
+        wallet={wallet} // Pass wallet here
+        onNext={handleNext}
       />
     ),
   };
@@ -112,11 +120,17 @@ function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
       <div className="flex items-center gap-4">
-        <h1 className="text-3xl font-semibold text-center">Sophie's Vending Machine</h1>
-        
+        <h1 className="text-3xl font-semibold text-center">
+          Sophie&apos;s Vending Machine
+        </h1>
+
         <Popover key={"primary"} color={"primary"} placement="top">
           <PopoverTrigger>
-            <Button className="rounded-full shadow-md" color="primary" variant="solid">
+            <Button
+              className="rounded-full shadow-md"
+              color="primary"
+              variant="solid"
+            >
               <HelpCircle className="w-6 h-6" />
             </Button>
           </PopoverTrigger>
@@ -124,7 +138,8 @@ function Home() {
             <div className="px-1 py-2">
               <h1 className="font-bold">Help</h1>
               <div className="">
-                To use the vending machine, insert coins, select a product, confirm your purchase, and enjoy!
+                To use the vending machine, insert coins, select a product,
+                confirm your purchase, and enjoy!
               </div>
             </div>
           </PopoverContent>
@@ -132,10 +147,18 @@ function Home() {
       </div>
       <div className="inline-block max-w-xl text-center justify-center">
         <Breadcrumbs size="lg">
-          <BreadcrumbItem key="coins" isCurrent={currentPage === "coins"}>Deposit Coins</BreadcrumbItem>
-          <BreadcrumbItem key="select" isCurrent={currentPage === "select"}>Select a Product</BreadcrumbItem>
-          <BreadcrumbItem key="confirm" isCurrent={currentPage === "confirm"}>Confirm Purchase</BreadcrumbItem>
-          <BreadcrumbItem key="enjoy" isCurrent={currentPage === "enjoy"}>Enjoy!</BreadcrumbItem>
+          <BreadcrumbItem key="coins" isCurrent={currentPage === "coins"}>
+            Deposit Coins
+          </BreadcrumbItem>
+          <BreadcrumbItem key="select" isCurrent={currentPage === "select"}>
+            Select a Product
+          </BreadcrumbItem>
+          <BreadcrumbItem key="confirm" isCurrent={currentPage === "confirm"}>
+            Confirm Purchase
+          </BreadcrumbItem>
+          <BreadcrumbItem key="enjoy" isCurrent={currentPage === "enjoy"}>
+            Enjoy!
+          </BreadcrumbItem>
         </Breadcrumbs>
       </div>
 

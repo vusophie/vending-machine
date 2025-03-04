@@ -25,7 +25,7 @@ export const siteConfig = {
     {
       label: "Enjoy!",
       href: "/step4",
-    }
+    },
   ],
   links: {
     github: "https://github.com/vusophie/vending-machine",

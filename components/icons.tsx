@@ -28,7 +28,6 @@ export const Logo: React.FC<IconSvgProps> = ({
       fill="currentColor"
       fillRule="evenodd"
     />
-
   </svg>
 );
 

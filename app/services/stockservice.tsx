@@ -19,16 +19,16 @@ class StockService {
   }
 
   updateStock(drink: string, quantity: number) {
-  
     this.stock = this.stock.map((item) => {
       if (item.drink === drink) {
         const newAmount = item.amount - quantity;
+
         return { ...item, amount: newAmount };
       }
+
       return item;
     });
   }
-  
 }
 
 export const stockService = new StockService();

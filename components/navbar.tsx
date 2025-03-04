@@ -1,33 +1,19 @@
-'use client'
+"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
-  NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@heroui/navbar";
 import { Button } from "@heroui/button";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
-import { link as linkStyles } from "@heroui/theme";
-import NextLink from "next/link";
-import clsx from "clsx";
-import {Breadcrumbs, BreadcrumbItem, Popover, PopoverContent, PopoverTrigger} from "@heroui/react";
+import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
+import React from "react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-  Logo,
-} from "@/components/icons";
-import React from "react";
+import { GithubIcon, HeartFilledIcon, Logo } from "@/components/icons";
 
 export const Navbar = () => {
   const [currentPage, setCurrentPage] = React.useState("start");
@@ -38,11 +24,12 @@ export const Navbar = () => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <div className="flex justify-start items-center gap-1">
             <Logo />
-            <p className="font-bold text-inherit">Sophie's Vending Machine</p>
+            <p className="font-bold text-inherit">
+              Sophie&apos;s Vending Machine
+            </p>
           </div>
         </NavbarBrand>
       </NavbarContent>
-
 
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"

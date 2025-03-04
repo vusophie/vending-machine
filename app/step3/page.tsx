@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button, Card, CardBody, Image } from "@heroui/react";
 import { useEffect, useState } from "react";
 
@@ -8,40 +8,36 @@ export default function Step3Page({
   amounts,
   setAmounts,
   wallet,
-  setWallet
+  setWallet,
 }) {
-  if (!selectedItem) {
-    return <div>No item selected.</div>;
-  }
-
   const [timer, setTimer] = useState(30);
   const [isTimerExpired, setIsTimerExpired] = useState(false);
 
   useEffect(() => {
     const countdown = setInterval(() => {
-      setTimer(prevTimer => {
+      setTimer((prevTimer) => {
         if (prevTimer === 1) {
           clearInterval(countdown);
           setIsTimerExpired(true);
           handleModifyPayment();
         }
+
         return prevTimer - 1;
       });
     }, 1000);
-  
+
     return () => clearInterval(countdown);
   }, []);
 
-  useEffect(() => {
-    console.log("Updated Wallet:", wallet);
-  }, [wallet]);
+  const totalAmount = amounts
+  ? Object.entries(amounts).reduce(
+      (acc, [coin, count]) =>
+        acc + count * (coin === "nickel" ? 5 : coin === "dime" ? 10 : 25),
+      0
+    )
+  : 0; 
 
-  const totalAmount = Object.entries(amounts).reduce(
-    (acc, [coin, count]) => acc + count * (coin === "nickel" ? 5 : coin === "dime" ? 10 : 25),
-    0
-  );
-
-  const changeDue = totalAmount - selectedItem.price;
+  const changeDue = totalAmount - (selectedItem?.price || 0);
   const isChangeDue = changeDue >= 0;
 
   /**
@@ -57,11 +53,15 @@ export default function Step3Page({
 
     setWallet(updatedWallet);
 
-    onNext("coins", {
-      nickel: 0,
-      dime: 0,
-      quarter: 0,
-    }, updatedWallet);
+    onNext(
+      "coins",
+      {
+        nickel: 0,
+        dime: 0,
+        quarter: 0,
+      },
+      updatedWallet,
+    );
   };
 
   /**
@@ -74,36 +74,46 @@ export default function Step3Page({
 
   return (
     <div className="flex flex-col items-center gap-6 p-6">
-      <Card shadow="lg" className="rounded-xl ">
+      <Card className="rounded-xl " shadow="lg">
         <CardBody className="flex flex-col items-center text-center">
-          <Image alt={selectedItem.drink} className="rounded-xl mb-6" src={selectedItem.img} width={180} height={180} />
-          <p className="text-2xl font-semibold mb-2">{selectedItem.drink}</p>
-          <p className="text-lg mb-4">Price: {selectedItem.price}¢</p>
+        <Image
+            alt={selectedItem?.drink ?? "Default drink"}
+            className="rounded-xl mb-6"
+            height={180}
+            src={selectedItem?.img ?? "./out-of-stock.png"}
+            width={180}
+          />
+          <p className="text-2xl font-semibold mb-2">{selectedItem?.drink ?? "No drink selected"}</p>
+          <p className="text-lg mb-4">Price: {selectedItem?.price ?? 0}¢</p>
           <p className="font-semibold text-lg mt-2">
             Change Due: {isChangeDue ? changeDue : 0}¢
           </p>
           {!isChangeDue && (
-            <p className="text-red-500 text-sm mt-2">Oops! You don't have enough funds for this item.</p>
+            <p className="text-red-500 text-sm mt-2">
+              Oops! You don&apos;t have enough funds for this item.
+            </p>
           )}
-          <p className="mt-4 text-sm">
-            Time remaining: <strong>{timer}s</strong>
-          </p>
+          <div>
+            <p>Time remaining: {timer}s</p>
+            {isTimerExpired && <p>Timer expired!</p>}
+          </div>
         </CardBody>
       </Card>
       <div className="w-full max-w-md">
         <div className="flex space-x-4 mt-4">
           <Button
-            onClick={handleConfirm}
-            color="primary" variant="solid" 
             className="w-full sm:w-auto"
+            color="primary"
+            variant="solid"
+            onClick={handleConfirm}
           >
             Confirm Payment
           </Button>
           <Button
-            onClick={handleModifyPayment}
+            className="w-full sm:w-auto"
             color="danger"
             variant="light"
-            className="w-full sm:w-auto"
+            onClick={handleModifyPayment}
           >
             Cancel
           </Button>

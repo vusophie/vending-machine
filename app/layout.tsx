@@ -1,15 +1,12 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@heroui/link";
 import clsx from "clsx";
-import {Breadcrumbs, BreadcrumbItem} from "@heroui/breadcrumbs";
 
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-import Drawer from "@/components/drawer";
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +47,6 @@ export default function RootLayout({
               {children}
             </main>
             {/* <Drawer /> */}
-
           </div>
         </Providers>
       </body>

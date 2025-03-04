@@ -1,5 +1,5 @@
-'use client';
-import { useState, useEffect, useRef } from 'react';
+"use client";
+import { useState, useEffect, useRef } from "react";
 
 export default function Drawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,15 +14,18 @@ export default function Drawer() {
   // Close the drawer if the click is outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
+      if (
+        drawerRef.current &&
+        !drawerRef.current.contains(event.target as Node)
+      ) {
         handleClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -30,8 +33,11 @@ export default function Drawer() {
     <div
       ref={drawerRef}
       className={`fixed top-1/2 transform -translate-y-1/2 right-0 w-[90vw] h-[70vh] shadow-xl transition-transform duration-300 rounded-l-xl ${
-        isOpen ? 'translate-x-0 backdrop-blur-md' : 'translate-x-[95%] hover:translate-x-[90%]'
+        isOpen
+          ? "translate-x-0 backdrop-blur-md"
+          : "translate-x-[95%] hover:translate-x-[90%]"
       }`}
+      role="button"
       onClick={handleOpen} // Clicking the visible portion opens the drawer
     >
       <div className="p-6 h-full flex flex-col justify-start">
@@ -41,8 +47,8 @@ export default function Drawer() {
             How to Use
           </h2>
           <button
-            onClick={handleClose}
             className="text-gray-600 hover:text-gray-800 transition duration-300"
+            onClick={handleClose}
           >
             ✕
           </button>
