@@ -24,7 +24,6 @@ This project utilizes the following technologies to create a seamless experience
 
 - **[Next.js 14](https://nextjs.org/docs/getting-started)** – React framework for building static and dynamic web applications.
 - **[HeroUI v2](https://heroui.com/)** – A set of pre-built components for building beautiful user interfaces.
-- **[Tailwind CSS](https://tailwindcss.com/)** – Utility-first CSS framework to style the application with minimal effort.
 - **[TypeScript](https://www.typescriptlang.org/)** – Superset of JavaScript that improves development efficiency through type safety.
 
 ---
@@ -73,8 +72,7 @@ The project has several areas for future enhancement:
 - **WCAG-Friendly**: Improve accessibility by adhering to Web Content Accessibility Guidelines (WCAG).
 - **Planned Improvements**: 
   - Add ARIA labels.
-  - Ensure keyboard navigability.
-  - Implement high-contrast themes.
+  - Ensure better keyboard navigability throughout the app.
 
 ### Multilingual Support
 
