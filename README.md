@@ -24,8 +24,6 @@ This project utilizes the following technologies to create a seamless experience
 
 - **[Next.js 14](https://nextjs.org/docs/getting-started)** – React framework for building static and dynamic web applications.
 - **[HeroUI v2](https://heroui.com/)** – A set of pre-built components for building beautiful user interfaces.
-- **[Tailwind CSS](https://tailwindcss.com/)** – Utility-first CSS framework to style the application with minimal effort.
-- **[Tailwind Variants](https://tailwind-variants.org)** – Library to manage Tailwind CSS variants dynamically.
 - **[TypeScript](https://www.typescriptlang.org/)** – Superset of JavaScript that improves development efficiency through type safety.
 
 ---
@@ -74,8 +72,7 @@ The project has several areas for future enhancement:
 - **WCAG-Friendly**: Improve accessibility by adhering to Web Content Accessibility Guidelines (WCAG).
 - **Planned Improvements**: 
   - Add ARIA labels.
-  - Ensure keyboard navigability.
-  - Implement high-contrast themes.
+  - Ensure better keyboard navigability throughout the app.
 
 ### Multilingual Support
 
@@ -94,12 +91,12 @@ Follow these simple steps to get the app up and running:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-repo/sophies-vending-machine.git
+    git clone https://github.com/vusophie/vending-machine.git
     ```
 
 2. Install dependencies:
     ```bash
-    cd sophies-vending-machine
+    cd vending-machine
     npm install
     ```
 
