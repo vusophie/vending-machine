@@ -86,8 +86,9 @@ The project has several areas for future enhancement:
 ---
 
 ## How to Use
+Click here to visit the [Vercel deployment](https://vending-machine-vusophies-projects.vercel.app/).
 
-Follow these simple steps to get the app up and running:
+You can also follow these simple steps to get the app up and running locally:
 
 1. Clone the repository:
     ```bash
