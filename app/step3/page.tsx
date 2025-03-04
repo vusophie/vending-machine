@@ -32,7 +32,7 @@ export default function Step3Page({
   }, []);
 
   useEffect(() => {
-    console.log("Updated Wallet in Step3Page:", wallet);
+    console.log("Updated Wallet:", wallet);
   }, [wallet]);
 
   const totalAmount = Object.entries(amounts).reduce(

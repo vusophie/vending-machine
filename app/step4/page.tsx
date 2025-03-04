@@ -37,7 +37,6 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
   useEffect(() => {
     if (wallet) {
       setWallet(wallet);
-      console.log("Wallet updated in Step4Page on load:", wallet);
     }
   }, [wallet, setWallet]);
 
