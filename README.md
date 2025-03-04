@@ -1,6 +1,6 @@
 # Sophie's Vending Machine
 
-Welcome to **Sophie's Vending Machine** – a modern vending machine web app that blends traditional functionality with new-age technology. The website is deployed on [Vercel here. ](https://vending-machine-em8rn5xbe-vusophies-projects.vercel.app/)
+Welcome to **Sophie's Vending Machine** – a modern vending machine web app that blends traditional functionality with new-age technology. The website is deployed on [Vercel](https://vending-machine-vusophies-projects.vercel.app/).
 
 ## Table of Contents
 
