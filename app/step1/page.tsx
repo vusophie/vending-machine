@@ -9,13 +9,22 @@ export default function Step1Page({ onNext, wallet }) {
   ];
 
   const [tempAmounts, setTempAmounts] = useState({ nickel: 0, dime: 0, quarter: 0 });
-  const handleNextRef = useRef(null); // Use ref for latest function reference
+  const handleNextRef = useRef(null);
 
+  /**
+   * Calculates the total amount of inserted coins.
+   * @returns {number} Total amount of inserted coins in cents.
+   */
   const totalAmount = Object.entries(tempAmounts).reduce((acc, [key, value]) => {
     const coin = data.find((c) => c.name === key);
     return acc + (coin ? coin.value * value : 0);
   }, 0);
 
+  /**
+   * Updates the amount of a specific coin type.
+   * @param {string} coin - The name of the coin type.
+   * @param {number} value - The new amount of the coin type.
+   */
   const handleAmountChange = (coin, value) => {
     setTempAmounts((prev) => {
       const maxValue = Math.min(value, wallet[coin]);
@@ -23,13 +32,20 @@ export default function Step1Page({ onNext, wallet }) {
     });
   };
 
+  /**
+   * Resets the coin amounts and proceeds to the next step.
+   */
   const handleNext = () => {
     setTempAmounts({ nickel: 0, dime: 0, quarter: 0 });
     onNext("select", tempAmounts);
   };
 
-  handleNextRef.current = handleNext; // Ensure latest function is used in event listener
+  handleNextRef.current = handleNext;
 
+  /**
+   * Handles key press events to update coin amounts or proceed to the next step.
+   * @param {KeyboardEvent} event - The keyboard event.
+   */
   const handleKeyPress = (event) => {
     setTempAmounts((prev) => {
       let updatedAmounts = { ...prev };
@@ -43,7 +59,7 @@ export default function Step1Page({ onNext, wallet }) {
       } else if (event.key === "c") {
         updatedAmounts = { nickel: 0, dime: 0, quarter: 0 };
       } else if (event.key === "Enter" && totalAmount >= 25) {
-        handleNextRef.current(); // Trigger next step on Enter
+        handleNextRef.current();
       }
 
       return updatedAmounts;
@@ -59,7 +75,6 @@ export default function Step1Page({ onNext, wallet }) {
 
   return (
     <div className="flex flex-row items-start gap-6">
-      {/* Wallet Section */}
       <Card shadow="md" className="p-5 w-1/3 rounded-xl">
         <CardBody>
           <h3 className="text-xl font-semibold">Wallet Status</h3>
@@ -73,10 +88,8 @@ export default function Step1Page({ onNext, wallet }) {
           </div>
         </CardBody>
       </Card>
-  
-      {/* Right Content */}
+
       <div className="w-2/3 space-y-4">
-        {/* Instruction Card */}
         <Card shadow="lg" className="p-6 rounded-xl">
           <CardBody>
             <h3 className="text-2xl font-boldmb-4"><strong>💰 How to Use Your Wallet</strong></h3>
@@ -100,7 +113,6 @@ export default function Step1Page({ onNext, wallet }) {
           </CardBody>
         </Card>
 
-  
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {data.map((item) => (
             <Card key={item.name} shadow="sm" className="p-4 flex flex-col items-center rounded-lg">
@@ -119,7 +131,7 @@ export default function Step1Page({ onNext, wallet }) {
             </Card>
           ))}
         </div>
-  
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
           <Button 
             onPress={() => setTempAmounts({ nickel: 0, dime: 0, quarter: 0 })} 
@@ -133,5 +145,4 @@ export default function Step1Page({ onNext, wallet }) {
       </div>
     </div>
   );
-  
 }

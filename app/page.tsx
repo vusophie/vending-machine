@@ -17,16 +17,31 @@ function Home() {
   const [wallet, setWallet] = useState({ nickel: 5, dime: 5, quarter: 5 });
   const [showHelp, setShowHelp] = useState(false);
 
+  /**
+   * Toggles the visibility of the help message.
+   * @returns {void}
+   */
   const toggleHelpMessage = () => {
     setShowHelp((prevShowHelp) => !prevShowHelp);
   };
 
+  /**
+   * Resets the selected item, amounts, and total amount.
+   * @returns {void}
+   */
   const resetData = () => {
     setSelectedItem(null);
     setAmounts({ nickel: 0, dime: 0, quarter: 0 });
     setTotalAmount(0);
   };
 
+  /**
+   * Handles navigation to the next step and updates amounts and wallet.
+   * @param {keyof typeof components} page - The next page to navigate to.
+   * @param {object} [newAmounts] - The new amounts of coins.
+   * @param {object} [updatedWallet] - The updated wallet.
+   * @returns {void}
+   */
   const handleNext = (page: keyof typeof components, newAmounts?: any, updatedWallet?: any) => {
     if (newAmounts) {
       setAmounts(newAmounts);
@@ -99,7 +114,6 @@ function Home() {
       <div className="flex items-center gap-4">
         <h1 className="text-3xl font-semibold text-center">Sophie's Vending Machine</h1>
         
-        {/* Help Button with Popover */}
         <Popover key={"primary"} color={"primary"} placement="top">
           <PopoverTrigger>
             <Button className="rounded-full shadow-md" color="primary" variant="solid">

@@ -7,7 +7,7 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
   const updateStockRef = useRef(null);
   const [change, setChange] = useState(0);
   const [selectedCoin, setSelectedCoin] = useState(null);
-  const [coinOptions, setCoinOptions] = useState({ nickel: true, dime: true, quarter: true, none: true});
+  const [coinOptions, setCoinOptions] = useState({ nickel: true, dime: true, quarter: true, none: true });
 
   useEffect(() => {
     if (selectedItem && updateStockRef.current !== selectedItem.drink) {
@@ -36,12 +36,15 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
 
   useEffect(() => {
     if (wallet) {
-      // Update the wallet state on mount based on the wallet from Step3Page
       setWallet(wallet);
       console.log("Wallet updated in Step4Page on load:", wallet);
     }
   }, [wallet, setWallet]);
 
+  /**
+   * Handles the selection of coin type for change.
+   * @param {string} coinType - The type of coin selected.
+   */
   const handleCoinSelection = (coinType) => {
     let remaining = changeDue;
     let coinsReturned = { nickel: 0, dime: 0, quarter: 0 };
@@ -69,24 +72,19 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
     return <div>No item selected.</div>;
   }
 
+  /**
+   * Handles returning to the coins step and updating the wallet.
+   */
   const handleReturnToCoins = () => {
-    // Add the selected change to the wallet
     const updatedWallet = { ...wallet };
 
     Object.entries(selectedCoin).forEach(([coin, count]) => {
       updatedWallet[coin] = (updatedWallet[coin] || 0) + count;
     });
 
-    // Update the wallet in the parent component
     setWallet(updatedWallet);
-
-    // Proceed to the Coins section
     onNext("coins");
   };
-
-  if (!selectedItem) {
-    return <div>No item selected.</div>;
-  }
 
   return (
     <div className="flex flex-col items-center justify-center text-center space-y-6 p-6">
@@ -113,17 +111,16 @@ export default function Step4Page({ onNext, selectedItem, amounts, wallet, setWa
       <p className="text-lg ">Select coin type for your change:</p>
       <div className="flex gap-4">
         <Button onClick={() => handleCoinSelection("quarter")} isDisabled={!coinOptions.quarter} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-        25¢
+          25¢
         </Button>
         <Button onClick={() => handleCoinSelection("dime")} isDisabled={!coinOptions.dime} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-        10¢
+          10¢
         </Button>
         <Button onClick={() => handleCoinSelection("nickel")} isDisabled={!coinOptions.nickel} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-        5¢
+          5¢
         </Button>
-
         <Button onClick={() => handleCoinSelection("none")} isDisabled={!coinOptions.none} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition">
-        0¢
+          0¢
         </Button>
       </div>
 

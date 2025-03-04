@@ -1,16 +1,13 @@
-import {Step1} from './step1/page';
 import { Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Image, Input, useDisclosure } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { Item, stockService } from "../services/stockservice";
 
-
-export default function Step2Page({ onNext, selectedItem, setSelectedItem, amounts, wallet, setWallet }: Step2PageProps) {
+export default function Step2Page({ onNext, selectedItem, setSelectedItem, amounts, wallet, setWallet }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [localSelectedItem, setLocalSelectedItem] = useState<Item | null>(selectedItem);
   const [quantity, setQuantity] = useState(1);
   const [stock, setStock] = useState<Item[]>([]);
 
-  // Calculate total amount dynamically from inserted coins
   const totalAmount = (amounts.nickel * 5) + (amounts.dime * 10) + (amounts.quarter * 25);
 
   useEffect(() => {
@@ -21,16 +18,22 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
     setLocalSelectedItem(selectedItem);
   }, [selectedItem]);
 
-
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [totalDrawerOpen, setTotalDrawerOpen] = useState(false);
 
-  const handleOpen = (item: Item) => {
+  /**
+   * Opens the drawer for the selected item.
+   * @param {Item} item - The selected item.
+   */
+  const handleOpen = (item) => {
     setLocalSelectedItem(item);
     setQuantity(1);
     onOpen();
   };
 
+  /**
+   * Handles the checkout process for the selected item.
+   */
   const handleCheckout = () => {
     if (isCheckingOut) return;
     setIsCheckingOut(true);
@@ -44,33 +47,27 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
     setTimeout(() => setIsCheckingOut(false), 500);
   };
 
+  /**
+   * Cancels the current selection and resets the wallet and amounts.
+   */
   const handleCancel = () => {
-    console.log("Wallet before modifying payment:", wallet);
-    console.log("Amounts before modifying payment:", amounts);
-
-    // Add the total amount paid back to the wallet
     const updatedWallet = {
       nickel: wallet.nickel + amounts.nickel,
       dime: wallet.dime + amounts.dime,
       quarter: wallet.quarter + amounts.quarter,
     };
 
-    console.log("Updated Wallet after adding total amount back:", updatedWallet);
     setWallet(updatedWallet);
 
-    // Call onNext with the updated wallet and reset selected amounts
     onNext("coins", {
       nickel: 0,
       dime: 0,
       quarter: 0,
     }, updatedWallet);
-
-    console.log("Wallet after calling onNext:", updatedWallet);
   };
 
   return (
     <div className="flex flex-col items-center space-y-6 p-6 min-h-screen">
-      {/* Button to open the Total Inserted Drawer */}
       <Button 
         onPress={() => setTotalDrawerOpen(true)} 
         variant="solid" 
@@ -80,12 +77,10 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
         Total Inserted: {totalAmount}¢ (View Details)
       </Button>
   
-      {/* Drink Selection Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         {stock.map((item, index) => (
           <Card key={index} shadow="sm" className="p-4 rounded-lg hover:shadow-lg transition-all">
             <CardBody className="flex flex-col items-center text-center">
-              {/* Drink Image */}
               <Image 
                 alt={item.drink} 
                 src={item.img} 
@@ -97,7 +92,6 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
               <p>{item.price}¢</p>
               <p className="mb-4">Available: {item.amount}</p>
   
-              {/* Add to Cart Button */}
               <Button
                 onPress={() => handleOpen(item)}
                 isDisabled={item.amount === 0 || quantity * item.price > totalAmount}
@@ -113,15 +107,14 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
       </div>
 
       <Button
-            onClick={handleCancel}
-            color="danger"
-            variant="light"
-            className="w-full sm:w-auto"
-          >
-            Cancel
-          </Button>
+        onClick={handleCancel}
+        color="danger"
+        variant="light"
+        className="w-full sm:w-auto"
+      >
+        Cancel
+      </Button>
   
-      {/* Drink Details Drawer */}
       {localSelectedItem && (
         <Drawer isOpen={isOpen} onOpenChange={onOpenChange} size="md">
           <DrawerContent className="flex flex-col items-center">
@@ -130,7 +123,6 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
             </DrawerHeader>
   
             <DrawerBody className="flex flex-col items-center w-full p-6">
-              {/* Drink Image */}
               <Image
                 alt={localSelectedItem.drink}
                 src={localSelectedItem.img}
@@ -139,7 +131,6 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
                 className="rounded-lg mb-6"
               />
   
-              {/* Drink Details */}
               <div className="w-full text-center">
                 <p className="text-lg mb-2">Price: {localSelectedItem.price}¢</p>
                 <p className="text-lg mb-4">Available: {localSelectedItem.amount}</p>
@@ -169,14 +160,10 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
         </Drawer>
       )}
   
-      {/* Total Inserted Amount Drawer */}
       <Drawer isOpen={totalDrawerOpen} onOpenChange={() => setTotalDrawerOpen(false)} size="md">
         <DrawerContent className="flex flex-col items-center">
-          
-  
           <DrawerBody className="flex flex-col items-center w-full p-6">
             <h3 className="text-xl font-semibold mb-4">Total Inserted: {totalAmount}¢</h3>
-            {/* Display inserted coin breakdown */}
             <div className="mb-6 p-4 rounded-lg border border-gray-200 w-full">
               <p>Nickels: {amounts.nickel} ({amounts.nickel * 5}¢)</p>
               <p>Dimes: {amounts.dime} ({amounts.dime * 10}¢)</p>
@@ -198,5 +185,4 @@ export default function Step2Page({ onNext, selectedItem, setSelectedItem, amoun
       </Drawer>
     </div>
   );
-  
 }
