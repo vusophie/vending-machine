@@ -94,12 +94,12 @@ Follow these simple steps to get the app up and running:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-repo/sophies-vending-machine.git
+    git clone https://github.com/vusophie/vending-machine.git
     ```
 
 2. Install dependencies:
     ```bash
-    cd sophies-vending-machine
+    cd vending-machine
     npm install
     ```
 
