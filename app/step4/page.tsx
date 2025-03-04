@@ -1,3 +1,4 @@
+'use client';
 import { Button, Card, CardBody, Image } from "@heroui/react";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState, useRef } from "react";

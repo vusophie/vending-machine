@@ -1,3 +1,4 @@
+'use client';
 import { Button, Card, CardBody, Image } from "@heroui/react";
 import { useEffect, useState } from "react";
 

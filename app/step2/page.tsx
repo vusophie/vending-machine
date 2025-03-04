@@ -1,3 +1,4 @@
+'use client';
 import { Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Image, Input, useDisclosure } from "@heroui/react";
 import { useState, useEffect } from "react";
 import { Item, stockService } from "../services/stockservice";
